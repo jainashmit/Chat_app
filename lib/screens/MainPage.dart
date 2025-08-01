@@ -12,55 +12,107 @@ class Mainpage extends StatefulWidget {
 }
 
 class _MainpageState extends State<Mainpage> {
-  int current_index = 0;
-  final Pages = [
-    ChatPage(),
-    SearchPage(),
-    UserPage()
-  ];
-
+  Destination selectedPage = Destination.chat;
+  final Pages = [ChatPage(), SearchPage(), UserPage()];
+  int index =0 ;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(12),
+        child: Pages[selectedPage.index]
+        ),
 
-      body: Pages[current_index],
+
       appBar: AppBar(
         backgroundColor: Appcolors.background,
-        elevation: 2,
-        title: Text('Let\'s Chat',style: TextStyle(
-          color: Colors.white,
-          
-        ),),
+        title: Text('Let\'s Chat', style: TextStyle(color: Colors.white)),
         centerTitle: true,
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.amber,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_outlined),
-            label: 'Chat',
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            label: 'Search',
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
-            label: 'User',
-          ),
-        ],
-        currentIndex: current_index,
-        onTap: (index) {
+      bottomNavigationBar: MyBottomNavigationBar(
+        selectedPage: selectedPage,
+        onClick: (value) {
           setState(() {
-            current_index = index;
+            selectedPage = value;
           });
         },
-        
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+      ),
+    );
+  }
+}
+
+enum Destination { chat, search, user }
+
+class MyBottomNavigationBar extends StatelessWidget {
+ final Destination selectedPage;
+  final ValueChanged onClick;
+
+  MyBottomNavigationBar({
+    super.key,
+    required this.selectedPage,
+    required this.onClick,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // color: Colors.white,
+      height: 87,
+      margin: EdgeInsets.only(top: 24 , bottom: 15 , left: 24 , right: 24),
+      padding: EdgeInsets.only(left: 12 , right: 12),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 17,
+            right: 0,
+            left: 0,
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(50),
+              ),
+
+              child: Row(
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () => onClick(Destination.search),
+                      icon: Icon(Icons.search),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: IconButton(
+                      onPressed: () => onClick(Destination.user),
+                      icon: Icon(Icons.person, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () => onClick(Destination.chat),
+              child: Container(
+                width: 64,
+                height: 64,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Appcolors.primary,
+                ),
+                child: Icon(Icons.chat),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
